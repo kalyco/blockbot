@@ -6,6 +6,7 @@ require "redis"
 require "dotenv"
 require "text"
 require 'time'
+require 'pry'
 
 configure do
 	# Load .env vars
@@ -14,10 +15,10 @@ configure do
   # Set up redis
   case settings.environment
   when :development
-    uri = URI.parse(ENV["LOCAL_REDIS_URL"])
+    uri = URI.parse(URI.encode(ENV["LOCAL_REDIS_URL"]))
   when :production
-    uri = URI.parse(ENV["REDISCLOUD_URL"])
-  end
+    uri = URI.parse(URI.encode(ENV["REDISCLOUD_URL"]))
+  end  
   $redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
 end
 
