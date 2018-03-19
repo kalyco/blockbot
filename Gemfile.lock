@@ -8,6 +8,7 @@ GEM
       thor (~> 0.19.1)
     httparty (0.16.1)
       multi_xml (>= 0.5.2)
+    logger (1.2.8)
     multi_xml (0.6.0)
     mustermann (1.0.2)
     rack (2.0.4)
@@ -34,6 +35,7 @@ DEPENDENCIES
   dotenv
   foreman
   httparty
+  logger
   redis
   sinatra
   text
