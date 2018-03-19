@@ -45,7 +45,6 @@ post "/" do
 		if params[:token] != ENV["OUTGOING_WEBHOOK_TOKEN"]
       response = "Invalid token"
     elsif params[:text].match(/^set blocker/i)
-      params[:blocker] = params[:text].match(/<(.*?)>/)[1]
     	reponse =  set_blocker(params)
     elsif params[:text].match(/^resolve/i) 
     	reponse =  resolve_block
@@ -82,17 +81,14 @@ def set_blocker(params)
     logger.info("existing blocker #{existing_blocker}")
 		time_blocked = get_time_blocked
 		reponse = "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
-	end	
-	if is_valid_blocker(params[:blocker])
+	else
+    params[:blocker] = params[:text].match(/<(.*?)>/)[1]	
 		$redis.set("blocked", params[:blocker])
 		$redis.set("time_blocked", time.Now)
 		$redis.set("blocker", params[:user_id])
 		$redis.set("team", params[:team_id])
     logger.debug("Valid blocker")
 		response = "Block created for team #{params[:team_id]}!"
-	else
-    reponse = "Invalid blocker"
-    logger.debug("blocker is invalid")
   end
   reponse
 end
@@ -153,6 +149,7 @@ def get_time_blocked()
   response
 end
 
+# TODO: Check Slack channel for matching name
 def is_valid_blocker(blocker_name)
 	valid = $redis.get(blocker_name)
   valid
