@@ -5,7 +5,6 @@ require "httparty"
 require "redis"
 require "dotenv"
 require "text"
-require "sanitize"
 require 'time'
 
 configure do
