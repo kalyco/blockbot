@@ -106,7 +106,7 @@ end
 def existing_blocker()
   blocker = $redis.get("blocker")
   if blocker.nil?
-  	return "No existing blocks. Yay!"	
+  	return false
   end
   return blocker
 end
