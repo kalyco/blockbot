@@ -5,6 +5,9 @@ require "httparty"
 require "redis"
 require "dotenv"
 require "text"
+require 'logger'
+
+logger = Logger.new(STDOUT)
 
 configure do
 	# Load .env vars
@@ -36,6 +39,7 @@ end
 
 post "/" do
 	begin
+    logger.info("Message received: #{params}")
 		puts "[LOG] #{params}"
 		params[:text] = params[:text].sub(params[:trigger_word], "").strip
 		if params[:token] != ENV["OUTGOING_WEBHOOK_TOKEN"]
@@ -52,6 +56,7 @@ post "/" do
     	response = invalid_request
     end	
 	end
+  logger.info("Response sent: #{response}")  
 	status 200
 	body json_response_for_slack(response)
 end
@@ -68,6 +73,7 @@ end
 def set_blocker(params)
 	channel_id = params[:channel_id]
 	if existing_blocker
+    logger.info("existing blocker #{existing_blocker}")
 		time_blocked = get_time_blocked
 		return "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
 	end	
@@ -77,7 +83,9 @@ def set_blocker(params)
 		$redis.set("blocker", params[:user_id])
 		$redis.set("team", params[:team_id])
 		return "Block created for team #{params[:team_id]}!"
-	end	
+	end
+  logger.debug("blocker is invalid")
+  return "Invalid blocker"
 end
 
 # Gets the existing blocker from redis
@@ -97,8 +105,10 @@ def ping_blocker()
 		blocker = $redis.get("blocker")
 		blocked = $redis.get("blocked")
 		time_blocked = get_time_blocked
+    logger.info("Pinging blocker")
 		return "#{blocker} has been blocking #{blocked} for #{time_blocked}"
 	end
+  logger.info("No existing blocker")
 	return "No existing blocks. Yay!"	
 end
 
@@ -113,6 +123,7 @@ end
 
 # Return total time on current block
 def get_time_blocked()
+  logger.info("Getting time blocked")
 	time_blocked = $redis.get("time_blocked")
 	now = Time.now
   seconds_diff = (time_blocked - now).to_i.abs
@@ -124,7 +135,6 @@ def get_time_blocked()
   seconds_diff -= minutes * 60
 
   seconds = seconds_diff
-
   return "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}"
 end
 
