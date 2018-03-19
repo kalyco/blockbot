@@ -5,7 +5,7 @@ require "httparty"
 require "redis"
 require "dotenv"
 require "text"
-require 'logger'
+require "logger"
 
 logger = Logger.new(STDOUT)
 
@@ -47,9 +47,9 @@ post "/" do
     elsif params[:text].match(/^set blocker/i) 
     	reponse =  set_blocker(params)
     elsif params[:text].match(/^resolve/i) 
-    	reponse =  resolve_block(params)
+    	reponse =  resolve_block
     elsif params[:text].match(/^ping blocker/i) 
-    	reponse =  ping_blocker(params)
+    	reponse =  ping_blocker
     elsif params[:text].match(/^help$/i)
       response = respond_with_help
     else 
