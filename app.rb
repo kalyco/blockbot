@@ -76,6 +76,7 @@ end
 
 # Set a new blocker
 def set_blocker(params)
+  logger.info("blocker params: #{params}")
 	channel_id = params[:channel_id]
 	if existing_blocker
     logger.info("existing blocker #{existing_blocker}")
