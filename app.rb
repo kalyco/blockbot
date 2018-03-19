@@ -120,6 +120,7 @@ def existing_blocker()
   if blocker.nil?
   	return false
   end
+    logger.info("Blocker exists: #{blocker}")
   return blocker
 end
 
@@ -128,7 +129,7 @@ def get_time_blocked()
   logger.info("Getting time blocked")
 	time_blocked = $redis.get("time_blocked")
 	now = Time.now
-  seconds_diff = (time_blocked - now).to_i.abs
+  seconds_diff = (time_blocked.to_i - now.to_i).to_i.abs
 
   hours = seconds_diff / 3600
   seconds_diff -= hours * 3600
