@@ -95,9 +95,9 @@ def resolve_block()
   blocker = $redis.get("blocker")
   blocked = $redis.get("blocked")
   time_blocked = $redis.get("time_blocked")
-  redis.set("blocker", nil)
-  redis.set("blocked", nil)
-  redis.set("time_blocked", nil)
+  $redis.set("blocker", nil)
+  $redis.set("blocked", nil)
+  $redis.set("time_blocked", nil)
   return "#{blocker} resolved #{blocked}'s issue after #{time_blocked}"
 end
 
