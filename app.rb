@@ -52,6 +52,7 @@ post "/" do
       response = respond_with_help
     else 
     	response = invalid_request
+    end	
 	end
 	status 200
 	body json_response_for_slack(response)
