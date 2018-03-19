@@ -44,7 +44,8 @@ post "/" do
 		params[:text] = params[:text].sub(params[:trigger_word], "").strip
 		if params[:token] != ENV["OUTGOING_WEBHOOK_TOKEN"]
       response = "Invalid token"
-    elsif params[:text].match(/^set blocker/i) 
+    elsif params[:text].match(/^set blocker/i)
+      params[:blocker] = params[:text].match(/<(.*?)>/)[1]
     	reponse =  set_blocker(params)
     elsif params[:text].match(/^resolve/i) 
     	reponse =  resolve_block
@@ -82,6 +83,7 @@ def set_blocker(params)
 		$redis.set("time_blocked", time.Now)
 		$redis.set("blocker", params[:user_id])
 		$redis.set("team", params[:team_id])
+    logger.debug("Valid blocker")
 		return "Block created for team #{params[:team_id]}!"
 	end
   logger.debug("blocker is invalid")
