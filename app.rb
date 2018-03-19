@@ -114,7 +114,7 @@ end
 # Return total time on current block
 def get_time_blocked()
 	time_blocked = $redis.get("time_blocked")
-	now = time.Now
+	now = Time.Now
   seconds_diff = (time_blocked - now).to_i.abs
 
   hours = seconds_diff / 3600
