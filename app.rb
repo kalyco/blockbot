@@ -56,7 +56,10 @@ post "/" do
     else 
     	response = invalid_request
     end	
-	end
+    rescue => e
+    puts "[ERROR] #{e}"
+    response = ""
+  end
   logger.info("Response sent: #{response}")  
 	status 200
 	body json_response_for_slack(response)
@@ -65,6 +68,7 @@ end
 # Puts together the json payload that needs to be sent back to Slack
 def json_response_for_slack(reply)
   response = { text: reply, link_names: 1 }
+  logger.info("JSON response is #{response.to_json}")
   response[:username] = ENV["BOT_USERNAME"] unless ENV["BOT_USERNAME"].nil?
   response[:icon_emoji] = ENV["BOT_ICON"] unless ENV["BOT_ICON"].nil?
   response.to_json
@@ -120,7 +124,7 @@ def existing_blocker()
   if blocker.nil?
   	return false
   end
-    logger.info("Blocker exists: #{blocker}")
+    logger.info("Blocker exists: #{blocker.to_json}")
   return blocker
 end
 
