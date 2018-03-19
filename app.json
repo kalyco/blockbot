@@ -26,10 +26,5 @@
       "required": true,
       "value": "blockbot"
     },
-    "TIME_WAITING_FOR_RESPONSE": {
-      "description": "Time, in HH:MM that a user has been blocked.",
-      "required": true,
-      "value": "30"
-    }
   }
 }
