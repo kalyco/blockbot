@@ -5,7 +5,6 @@ require "httparty"
 require "redis"
 require "dotenv"
 require "text"
-require 'time'
 
 configure do
 	# Load .env vars
