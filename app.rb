@@ -121,6 +121,7 @@ end
 # Gets the existing blocker from redis
 def existing_blocker()
   blocker = $redis.get("blocker")
+  logger.info(blocker)
   if blocker === ("" || nil)
   	return false
   end
