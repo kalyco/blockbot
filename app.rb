@@ -80,7 +80,7 @@ def set_blocker(params)
 	if existing_blocker
     logger.info("existing blocker #{existing_blocker}")
 		time_blocked = get_time_blocked
-		return "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
+		reponse = "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
 	end	
 	if is_valid_blocker(params[:blocker])
 		$redis.set("blocked", params[:blocker])
@@ -88,10 +88,12 @@ def set_blocker(params)
 		$redis.set("blocker", params[:user_id])
 		$redis.set("team", params[:team_id])
     logger.debug("Valid blocker")
-		return "Block created for team #{params[:team_id]}!"
-	end
-  logger.debug("blocker is invalid")
-  return "Invalid blocker"
+		response = "Block created for team #{params[:team_id]}!"
+	else
+    reponse = "Invalid blocker"
+    logger.debug("blocker is invalid")
+  end
+  reponse
 end
 
 # Gets the existing blocker from redis
@@ -102,7 +104,8 @@ def resolve_block()
   $redis.set("blocker", nil)
   $redis.set("blocked", nil)
   $redis.set("time_blocked", nil)
-  return "#{blocker} resolved #{blocked}'s issue after #{time_blocked}"
+  response = "#{blocker} resolved #{blocked}'s issue after #{time_blocked}"
+  response
 end
 
 # return time blocked
@@ -112,10 +115,12 @@ def ping_blocker()
 		blocked = $redis.get("blocked")
 		time_blocked = get_time_blocked
     logger.info("Pinging blocker")
-		return "#{blocker} has been blocking #{blocked} for #{time_blocked}"
-	end
-  logger.info("No existing blocker")
-	return "No existing blocks. Yay!"	
+		reponse = "#{blocker} has been blocking #{blocked} for #{time_blocked}"
+	else
+    logger.info("No existing blocker")
+	 response = "No existing blocks. Yay!"	
+  end
+  response
 end
 
 # Gets the existing blocker from redis
@@ -123,10 +128,10 @@ def existing_blocker()
   blocker = $redis.get("blocker")
   logger.info(blocker)
   if blocker === ("" || nil)
-  	return false
+  	false
   end
-    logger.info("Blocker exists: #{blocker.to_json}")
-  return blocker
+  logger.info("Blocker exists: #{blocker.to_json}")
+  blocker
 end
 
 # Return total time on current block
@@ -143,11 +148,13 @@ def get_time_blocked()
   seconds_diff -= minutes * 60
 
   seconds = seconds_diff
-  return "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}"
+  response = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}"
+  response
 end
 
 def is_valid_blocker(blocker_name)
-	return $redis.exists(blocker_name)
+	valid = $redis.get(blocker_name)
+  valid
 end	
 
 # Shows the help text.
