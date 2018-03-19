@@ -6,7 +6,6 @@ require "redis"
 require "dotenv"
 require "text"
 require 'time'
-require 'pry'
 
 configure do
 	# Load .env vars
