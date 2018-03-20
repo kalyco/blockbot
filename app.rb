@@ -126,7 +126,7 @@ def existing_blocker()
   if !$redis.get("blocker")
   	false
   else
-  logger.info("Blocker exists: #{blocker.to_json}")
+  logger.info("Blocker exists: #{$redis.get('blocker').to_json}")
   $redis.get("blocker")
   end
 end
@@ -151,8 +151,7 @@ end
 
 # TODO: Check Slack channel for matching name
 def is_valid_blocker(blocker_name)
-	valid = $redis.get(blocker_name)
-  valid
+	$redis.get(blocker_name)
 end	
 
 # Shows the help text.
