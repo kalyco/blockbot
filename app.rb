@@ -83,9 +83,9 @@ def set_blocker(params)
 		response = "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
 	else
     params[:blocker] = params[:text].match(/<(.*?)>/)[1]	
-		$redis.set("blocked", params[:blocker])
+		$redis.set("blocked", params[:user_name])
 		$redis.set("time_blocked", time.Now)
-		$redis.set("blocker", params[:user_id])
+		$redis.set("blocker", params[:blocker])
 		$redis.set("team", params[:team_id])
     logger.debug("Valid blocker")
 		response = "Block created for team #{params[:team_id]}!"
@@ -97,11 +97,11 @@ end
 def resolve_block()
   blocker = $redis.get("blocker")
   blocked = $redis.get("blocked")
+  response = "#{blocker} resolved #{blocked}'s issue after #{time_blocked}"
   time_blocked = $redis.get("time_blocked")
   $redis.set("blocker", nil)
   $redis.set("blocked", nil)
   $redis.set("time_blocked", nil)
-  response = "#{blocker} resolved #{blocked}'s issue after #{time_blocked}"
   response
 end
 
