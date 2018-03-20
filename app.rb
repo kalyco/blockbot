@@ -7,12 +7,14 @@ require "dotenv"
 require "text"
 require "logger"
 
-config.time_zone = 'Eastern Time (US & Canada)'
+
 logger = Logger.new(STDOUT)
 
-configure do
+config do
 	# Load .env vars
 	Dotenv.load
+
+  config.time_zone = ENV["TIME_ZONE"]
 
   # Set up redis
   case settings.environment
