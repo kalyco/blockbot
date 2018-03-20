@@ -81,11 +81,10 @@ def create_a_block(params)
     time_blocked = get_time_blocked
     response = "Can not create new issue. Current issue has been blocked by <@#{existing_blocker}> for #{time_blocked}"
   else
-    params[:blocker] = params[:text].match(/<(.*?)>/)[1]
     $redis.set('blocked', params[:user_id])
-    $redis.set('time_blocked', Time.now.to_i)
     $redis.set('blocker', params[:blocker])
-    response = "<@#{params[:user_id]}> is blocked by <#{params[:blocker]}> in ##{params[:channel_name]}!"
+    $redis.set('time_blocked', Time.now.to_i)
+    response = "<@#{params[:user_id]}> is blocked by <@#{params[:blocker]}> in ##{params[:channel_name]}!"
   end
   response
 end
@@ -94,7 +93,7 @@ end
 def resolve_block
   blocker = $redis.get('blocker')
   blocked = $redis.get('blocked')
-  response = "<#{blocker}> resolved <@#{blocked}>'s issue after #{get_time_blocked}"
+  response = "<@#{blocker}> resolved <@#{blocked}>'s issue after #{get_time_blocked}"
   create_or_update_time(blocked, 'total_time_blocked')
   create_or_update_time(blocker, 'total_time_blocking')
   $redis.set('blocker', nil)
@@ -120,7 +119,7 @@ def ping_blocker
     blocked = $redis.get('blocked')
     time_blocked = get_time_blocked
     logger.info('Pinging blocker')
-    response = "<#{blocker}> has been blocking <@#{blocked}> for #{time_blocked}"
+    response = "<@#{blocker}> has been blocking <@#{blocked}> for #{time_blocked}"
   else
     response = 'No existing blocks. Yay!'
   end
