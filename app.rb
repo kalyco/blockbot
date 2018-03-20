@@ -99,8 +99,8 @@ end
 def resolve_block()
   blocker = $redis.get("blocker")
   blocked = $redis.get("blocked")
-  response = "#{blocker} resolved #{blocked}'s issue after #{time_blocked}"
   time_blocked = $redis.get("time_blocked")
+  response = "#{blocker} resolved #{blocked}'s issue after #{time_blocked}"
   $redis.set("blocker", nil)
   $redis.set("blocked", nil)
   $redis.set("time_blocked", nil)
@@ -147,7 +147,11 @@ end
 # TODO: Check Slack channel for matching name
 def is_valid_blocker(blocker_name)
 	$redis.get(blocker_name)
-end	
+end
+
+def invalid_request
+  "Request is invalid. Check `#{ENV["BOT_USERNAME"]} help` for acceptable inputs"
+end
 
 # Shows the help text.
 def respond_with_help
