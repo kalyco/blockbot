@@ -49,7 +49,7 @@ post '/' do
                  create_a_block(params)
                elsif params[:text] =~ /^resolve/i
                  resolve_block
-               elsif params[:text] =~ /^ping blocker/i
+               elsif params[:text] =~ /^ping/i
                  ping_blocker
                elsif params[:text] =~ /^help$/i
                  respond_with_help
@@ -85,7 +85,7 @@ def create_a_block(params)
     $redis.set('blocked', params[:user_id])
     $redis.set('time_blocked', Time.now.to_i)
     $redis.set('blocker', params[:blocker])
-    response = "<@#{params[:user_id]}> is blocked by <@#{params[:blocker]}> in ##{params[:channel_name]}!"
+    response = "<@#{params[:user_id]}> is blocked by <#{params[:blocker]}> in ##{params[:channel_name]}!"
   end
   response
 end
@@ -94,7 +94,7 @@ end
 def resolve_block
   blocker = $redis.get('blocker')
   blocked = $redis.get('blocked')
-  response = "<@#{blocker}> resolved <@#{blocked}>'s issue after #{get_time_blocked}"
+  response = "<#{blocker}> resolved <@#{blocked}>'s issue after #{get_time_blocked}"
   create_or_update_time(blocked, 'total_time_blocked')
   create_or_update_time(blocker, 'total_time_blocking')
   $redis.set('blocker', nil)
@@ -120,7 +120,7 @@ def ping_blocker
     blocked = $redis.get('blocked')
     time_blocked = get_time_blocked
     logger.info('Pinging blocker')
-    response = "<@#{blocker}> has been blocking <@#{blocked}> for #{time_blocked}"
+    response = "<#{blocker}> has been blocking <@#{blocked}> for #{time_blocked}"
   else
     response = 'No existing blocks. Yay!'
   end
@@ -150,7 +150,7 @@ def get_time_blocked(in_seconds = false)
 end
 
 def invalid_request
-  "Request is invalid. Check `#{ENV['BOT_USERNAME']} help` for acceptable inputs"
+  "Request invalid. Type `#{ENV['BOT_USERNAME']} help` for acceptable inputs"
 end
 
 # Shows the help text.
