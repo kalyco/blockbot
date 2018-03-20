@@ -45,17 +45,17 @@ post "/" do
 		if params[:token] != ENV["OUTGOING_WEBHOOK_TOKEN"]
       response = "Invalid token"
     elsif params[:text].match(/^set blocker/i)
-    	response =  set_blocker(params)
+    	response = set_blocker(params)
     elsif params[:text].match(/^resolve/i) 
-    	response =  resolve_block
+    	response = resolve_block
     elsif params[:text].match(/^ping blocker/i) 
-    	reponse =  ping_blocker
+    	reponse = ping_blocker
     elsif params[:text].match(/^help$/i)
       response = respond_with_help
     else 
     	response = invalid_request
     end	
-    rescue => e
+  rescue => e
     puts "[ERROR] #{e}"
     response = ""
   end
@@ -82,13 +82,14 @@ def set_blocker(params)
 		time_blocked = get_time_blocked
 		response = "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
 	else
-    params[:blocker] = params[:text].match(/<(.*?)>/)[1]	
+    params[:blocker] = params[:text].match(/<(.*?)>/)[1]
+    logger.debug(params[:blocker])
 		$redis.set("blocked", params[:user_name])
-		$redis.set("time_blocked", time.Now)
+		$redis.set("time_blocked", Time.now)
 		$redis.set("blocker", params[:blocker])
 		$redis.set("team", params[:team_id])
-    logger.debug("Valid blocker")
-		response = "Block created for team #{params[:team_id]}!"
+		logger.debug("Block created for team #{params[:team_id]}!")
+    response = "Block created for team #{params[:team_id]}!"
   end
   response
 end
@@ -105,7 +106,7 @@ def resolve_block()
   response
 end
 
-# return time blocked
+# Return time blocked
 def ping_blocker()
 	if existing_blocker
 		blocker = $redis.get("blocker")
