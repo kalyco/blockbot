@@ -14,8 +14,6 @@ configure do
 	# Load .env vars
 	Dotenv.load
 
-  time_zone = ENV["TIME_ZONE"]
-
   # Set up redis
   case settings.environment
   when :development
@@ -88,7 +86,7 @@ def set_blocker(params)
     params[:blocker] = params[:text].match(/<(.*?)>/)[1]
     logger.debug(params[:blocker])
 		$redis.set("blocked", params[:user_name])
-		$redis.set("time_blocked", Time.now.in_time_zone)
+		$redis.set("time_blocked", Time.now.to_i)
 		$redis.set("blocker", params[:blocker])
 		$redis.set("team", params[:team_id])
 		logger.debug("Block created for team #{params[:team_id]}!")
@@ -138,7 +136,7 @@ end
 def get_time_blocked()
   logger.info("Getting time blocked")
 	time_blocked = $redis.get("time_blocked").to_i
-	now = Time.now.in_time_zone.to_i
+	now = Time.now.to_i
 
   total_time_blocked = Time.at(now - time_blocked).strftime("%H:%M:%S")
 
