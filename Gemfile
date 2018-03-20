@@ -1,12 +1,13 @@
+# frozen_string_literal: true
 
-source "https://rubygems.org"
-ruby "2.3.3"
+source 'https://rubygems.org'
+ruby '2.3.3'
 
-gem "sinatra"
-gem "thin"
-gem "dotenv"
-gem "redis"
-gem "httparty"
-gem "foreman"
-gem "text"
-gem "logger"
+gem 'dotenv'
+gem 'foreman'
+gem 'httparty'
+gem 'logger'
+gem 'redis'
+gem 'sinatra'
+gem 'text'
+gem 'thin'
