@@ -127,6 +127,7 @@ def existing_blocker()
   else
   logger.info("Blocker exists: #{blocker.to_json}")
   $redis.get("blocker")
+  end
 end
 
 # Return total time on current block
