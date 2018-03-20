@@ -7,6 +7,7 @@ require "dotenv"
 require "text"
 require "logger"
 
+config.time_zone = 'Eastern Time (US & Canada)'
 logger = Logger.new(STDOUT)
 
 configure do
@@ -85,7 +86,7 @@ def set_blocker(params)
     params[:blocker] = params[:text].match(/<(.*?)>/)[1]
     logger.debug(params[:blocker])
 		$redis.set("blocked", params[:user_name])
-		$redis.set("time_blocked", Time.now)
+		$redis.set("time_blocked", Time.now.in_time_zone)
 		$redis.set("blocker", params[:blocker])
 		$redis.set("team", params[:team_id])
 		logger.debug("Block created for team #{params[:team_id]}!")
@@ -134,18 +135,12 @@ end
 # Return total time on current block
 def get_time_blocked()
   logger.info("Getting time blocked")
-	time_blocked = $redis.get("time_blocked")
-	now = Time.now
-  seconds_diff = (time_blocked.to_i - now.to_i).to_i.abs
+	time_blocked = $redis.get("time_blocked").to_i
+	now = Time.now.in_time_zone.to_i
 
-  hours = seconds_diff / 3600
-  seconds_diff -= hours * 3600
+  total_time_blocked = Time.at(now - time_blocked).strftime("%H:%M:%S")
 
-  minutes = seconds_diff / 60
-  seconds_diff -= minutes * 60
-
-  seconds = seconds_diff
-  response = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}"
+  response = "#{total_time_blocked}"
   response
 end
 
