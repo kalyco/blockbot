@@ -146,7 +146,7 @@ end
 
 # TODO: Check Slack channel for matching name
 def is_valid_blocker(blocker_id)
-  user = $redis.scan_each(:match => "user_id:blocker_id"){ |key| puts key};
+  user = $redis.scan_each(:match => "user_id:#{blocker_id}"){ |key| key};
   logger.debug(`user is #{user}`)
   user
 end
