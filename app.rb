@@ -40,7 +40,6 @@ end
 
 post "/" do
 	begin
-    logger.info("Message received: #{params}")
 		puts "[LOG] #{params}"
 		params[:text] = params[:text].sub(params[:trigger_word], "").strip
 		if params[:token] != ENV["OUTGOING_WEBHOOK_TOKEN"]
@@ -79,7 +78,7 @@ def set_blocker(params)
   params[:blocker] = params[:text].match(/<(.*?)>/)
   logger.info("blocker params: #{params}")
 	channel_id = params[:channel_id]
-	if existing_blocker && is_valid_blocker(params[:blocker])
+	if existing_blocker
     logger.info("existing blocker #{existing_blocker}")
 		time_blocked = get_time_blocked
 		response = "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
@@ -91,7 +90,7 @@ def set_blocker(params)
 		$redis.set("blocker", params[:blocker])
 		$redis.set("team", params[:team_id])
 		logger.debug("Block created on #{params[:channel_name]}!")
-    response = "Block instantiated on #{params[:channel_name]}!"
+    response = "<@#{params[:user_name]}> is blocked by #{params[:blocker]} in #{params[:channel_name]}!"
   end
   response
 end
