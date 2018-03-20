@@ -45,9 +45,9 @@ post "/" do
 		if params[:token] != ENV["OUTGOING_WEBHOOK_TOKEN"]
       response = "Invalid token"
     elsif params[:text].match(/^set blocker/i)
-    	reponse =  set_blocker(params)
+    	response =  set_blocker(params)
     elsif params[:text].match(/^resolve/i) 
-    	reponse =  resolve_block
+    	response =  resolve_block
     elsif params[:text].match(/^ping blocker/i) 
     	reponse =  ping_blocker
     elsif params[:text].match(/^help$/i)
@@ -80,7 +80,7 @@ def set_blocker(params)
 	if existing_blocker
     logger.info("existing blocker #{existing_blocker}")
 		time_blocked = get_time_blocked
-		reponse = "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
+		response = "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
 	else
     params[:blocker] = params[:text].match(/<(.*?)>/)[1]	
 		$redis.set("blocked", params[:blocker])
@@ -90,7 +90,7 @@ def set_blocker(params)
     logger.debug("Valid blocker")
 		response = "Block created for team #{params[:team_id]}!"
   end
-  reponse
+  response
 end
 
 # Gets the existing blocker from redis
@@ -112,7 +112,7 @@ def ping_blocker()
 		blocked = $redis.get("blocked")
 		time_blocked = get_time_blocked
     logger.info("Pinging blocker")
-		reponse = "#{blocker} has been blocking #{blocked} for #{time_blocked}"
+		response = "#{blocker} has been blocking #{blocked} for #{time_blocked}"
 	else
     logger.info("No existing blocker")
 	 response = "No existing blocks. Yay!"	
