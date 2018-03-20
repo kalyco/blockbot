@@ -10,11 +10,11 @@ require "logger"
 
 logger = Logger.new(STDOUT)
 
-config do
+configure do
 	# Load .env vars
 	Dotenv.load
 
-  config.time_zone = ENV["TIME_ZONE"]
+  time_zone = ENV["TIME_ZONE"]
 
   # Set up redis
   case settings.environment
