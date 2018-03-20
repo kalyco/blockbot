@@ -93,15 +93,16 @@ end
 def resolve_block
   blocker = $redis.get('blocker')
   blocked = $redis.get('blocked')
-  if blocker === (nil || '') && blocked !== (nil || '')
+  if blocker != (nil || '') && blocked != (nil || '')
     response = "<@#{blocker}> resolved <@#{blocked}>'s issue after #{get_time_blocked}"
     create_or_update_time(blocked, 'total_time_blocked')
     create_or_update_time(blocker, 'total_time_blocking')
     $redis.set('blocker', nil)
     $redis.set('blocked', nil)
     $redis.set('time_blocked', nil)
-   else
-    response = 'No blocks found.Yay!' 
+  else
+    response = 'No blocks found.Yay!'
+  end 
   response
 end
 
