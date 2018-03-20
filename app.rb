@@ -76,9 +76,10 @@ end
 
 # Set a new blocker
 def set_blocker(params)
+  params[:blocker] = params[:text].match(/<(.*?)>/)
   logger.info("blocker params: #{params}")
 	channel_id = params[:channel_id]
-	if existing_blocker
+	if existing_blocker && is_valid_blocker(params[:blocker])
     logger.info("existing blocker #{existing_blocker}")
 		time_blocked = get_time_blocked
 		response = "Can not create new issue. Current issue has been blocked by #{existing_blocker} for #{time_blocked}"
@@ -89,8 +90,8 @@ def set_blocker(params)
 		$redis.set("time_blocked", Time.now.to_i)
 		$redis.set("blocker", params[:blocker])
 		$redis.set("team", params[:team_id])
-		logger.debug("Block created for team #{params[:team_id]}!")
-    response = "Block created for team #{params[:team_id]}!"
+		logger.debug("Block created on #{params[:channel_name]}!")
+    response = "Block instantiated on #{params[:channel_name]}!"
   end
   response
 end
@@ -99,8 +100,7 @@ end
 def resolve_block()
   blocker = $redis.get("blocker")
   blocked = $redis.get("blocked")
-  time_blocked = $redis.get("time_blocked")
-  response = "#{blocker} resolved #{blocked}'s issue after #{time_blocked}"
+  response = "#{blocker} resolved #{blocked}'s issue after #{get_time_blocked}"
   $redis.set("blocker", nil)
   $redis.set("blocked", nil)
   $redis.set("time_blocked", nil)
@@ -145,8 +145,10 @@ def get_time_blocked()
 end
 
 # TODO: Check Slack channel for matching name
-def is_valid_blocker(blocker_name)
-	$redis.get(blocker_name)
+def is_valid_blocker(blocker_id)
+  user = $redis.scan_each(:match => "user_id:blocker_id"){ |key| puts key};
+  logger.debug(`user is #{user}`)
+  user
 end
 
 def invalid_request
