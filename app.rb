@@ -122,13 +122,11 @@ end
 
 # Gets the existing blocker from redis
 def existing_blocker()
-  blocker = $redis.get("blocker")
-  logger.info(blocker)
-  if blocker === ("" || nil)
+  if !$redis.get("blocker")
   	false
-  end
+  else
   logger.info("Blocker exists: #{blocker.to_json}")
-  blocker
+  $redis.get("blocker")
 end
 
 # Return total time on current block
