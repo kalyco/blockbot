@@ -76,7 +76,7 @@ end
 
 # Set block
 def create_a_block(params)
-  params[:blocker] = params[:text].match(/@(.*?)>/)
+  params[:blocker] = params[:text].match(/@(.*?)>/)[1]
   if existing_blocker
     time_blocked = get_time_blocked
     response = "Can not create new issue. Current issue has been blocked by <@#{existing_blocker}> for #{time_blocked}"
