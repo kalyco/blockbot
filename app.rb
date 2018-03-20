@@ -49,7 +49,7 @@ post "/" do
     elsif params[:text].match(/^resolve/i) 
     	response = resolve_block
     elsif params[:text].match(/^ping blocker/i) 
-    	reponse = ping_blocker
+    	response = ping_blocker
     elsif params[:text].match(/^help$/i)
       response = respond_with_help
     else 
@@ -123,7 +123,7 @@ end
 
 # Gets the existing blocker from redis
 def existing_blocker()
-  if !$redis.get("blocker")
+  if $redis.get("blocker") === ("" || nil)
   	false
   else
   logger.info("Blocker exists: #{$redis.get('blocker').to_json}")
