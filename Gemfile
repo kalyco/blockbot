@@ -8,6 +8,6 @@ gem 'foreman'
 gem 'httparty'
 gem 'logger'
 gem 'redis'
-gem 'sinatra'
+gem "sinatra", ">= 2.0.2"
 gem 'text'
 gem 'thin'
