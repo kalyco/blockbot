@@ -51,8 +51,6 @@ post '/' do
                  resolve_block
                elsif params[:text] =~ /^ping/i
                  ping_blocker
-               elsif params[:text] =~ /^status/i
-                 ping_blocker
                elsif params[:text] =~ /^help$/i
                  respond_with_help
                else
@@ -108,6 +106,16 @@ def resolve_block
   response
 end
 
+def create_or_update_time(user, time_column)
+  last_time_block = get_time_blocked(true)
+  if $redis.hmget("user:#{user}", time_column) === [nil]
+    $redis.hmset("user:#{user}", time_column, last_time_block)
+  else
+    new_total_time = $redis.hmget("user:#{user}", column) + last_time_block
+    $redis.hmset("user:#{user}", column, new_total_time)
+  end
+end
+
 # Return time blocked
 def ping_blocker
   if existing_blocker
@@ -144,16 +152,6 @@ def get_time_blocked(in_seconds = false)
   response
 end
 
-def create_or_update_time(user, time_column)
-  last_time_block = get_time_blocked(true)
-  if $redis.hmget("user:#{user}", time_column) === [nil]
-    $redis.hmset("user:#{user}", time_column, last_time_block)
-  else
-    new_total_time = $redis.hmget("user:#{user}", column) + last_time_block
-    $redis.hmset("user:#{user}", column, new_total_time)
-  end
-end
-
 def invalid_request
   "Request invalid. Type `#{ENV['BOT_USERNAME']} help` for acceptable inputs"
 end
@@ -164,7 +162,6 @@ def respond_with_help
     Type `#{ENV['BOT_USERNAME']} set blocker [@slack_user]` to set a block.
     Type `#{ENV['BOT_USERNAME']} resolve` to resolve an existing block.
     Type `#{ENV['BOT_USERNAME']} ping blocker` to ping the blocker and display time blocked.
-    Type `#{ENV['BOT_USERNAME']} status` to check current block status.
 help
   reply
 end
