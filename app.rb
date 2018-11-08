@@ -111,8 +111,8 @@ def create_or_update_time(user, time_column)
   if $redis.hmget("user:#{user}", time_column) === [nil]
     $redis.hmset("user:#{user}", time_column, last_time_block)
   else
-    new_total_time = $redis.hmget("user:#{user}", column) + last_time_block
-    $redis.hmset("user:#{user}", column, new_total_time)
+    new_total_time = $redis.hmget("user:#{user}", time_column) + last_time_block
+    $redis.hmset("user:#{user}", time_column, new_total_time)
   end
 end
 
